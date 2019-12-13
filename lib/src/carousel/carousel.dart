@@ -59,7 +59,7 @@ class Carousel extends StatefulWidget {
 
   final double indicatorBackgroundOpacity;
   dynamic updateIndicator;
-  PageController controller;
+  final PageController controller;
 
   Carousel(
       {Key key,
@@ -76,8 +76,15 @@ class Carousel extends StatefulWidget {
       this.unActiveIndicatorColor,
       this.indicatorBackgroundColor,
       this.activeIndicatorColor,
+      PageController controller,
       @required this.children})
-      : super(key: key) {
+      : controller = controller ??
+            PageController(
+              initialPage: 0,
+              keepPage: true,
+              viewportFraction: type == "slideswiper" ? 0 : 1,
+            ),
+        super(key: key) {
     this.createState();
   }
   @override
@@ -89,7 +96,6 @@ class Carousel extends StatefulWidget {
 class _CarouselState extends State<Carousel> {
   int position = 0;
   double animatedFactor;
-  double offset;
 
   @override
   dispose() {
@@ -119,16 +125,10 @@ class _CarouselState extends State<Carousel> {
 
   @override
   Widget build(BuildContext context) {
-    offset = widget.type == "slideswiper" ? 0.8 : 1.0;
     Size size = MediaQuery.of(context).size;
     ScreenRatio.setScreenRatio(size: size);
     animatedFactor =
         widget.axis == Axis.horizontal ? widget.width : widget.height;
-    widget.controller = new PageController(
-      initialPage: 0,
-      keepPage: true,
-      viewportFraction: offset,
-    );
     return Container(
         child: Stack(
       children: <Widget>[
